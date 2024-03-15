@@ -100,7 +100,7 @@ class CONSOLE:
             Function(Key='-v', Symbol=self.VisualKeysDict['-v'][0])
 
         except ValueError:
-            print(f"{self.NL}FUNCTION ERROR: This function does not support this visualization key "
+            print(f"{self.NL}FUNCTION ERROR: This function does not support this key "
                   f"(write 'keys' for information)")
             return
 
@@ -114,7 +114,7 @@ class CONSOLE:
             self.Func.ClearBuffer()
 
     def PrintCommand(self):
-        print(f"{self.NL}{self.TAB}Вид записи: имя_функции параметр_1 параметр_2{self.NL}")
+        print(f"{self.NL}{self.TAB}Вид записи: имя_функции значение_параметра_1 значение_параметра_2{self.NL}")
 
         for command in self.AllCommandsDict.keys():
             Instruction = self.AllCommandsDict[command]

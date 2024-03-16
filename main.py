@@ -60,6 +60,8 @@ class CONSOLE:
                                '-lr4': ('0', 'Заменяет пробел на используемый символ левее и правее графика функции',
                                         'cos_sin'),
                                }
+        self.ChangeFuncKeysDict = {'-cf': ('', 'Меняет значение аргумента в указанное k раз', 'коэффициент k',
+                                           'sin, cos, tan, cos_sin')}
 
         self.Func = Functions()
 
@@ -69,6 +71,7 @@ class CONSOLE:
 
             try:
                 self.AllCommandsDict[self.UserCommand[0]][0]()
+
             except KeyError:
                 print(f"{self.NL}CONSOLE ERROR: Unknown command (write 'commands' for information)")
 
@@ -90,20 +93,74 @@ class CONSOLE:
             return
 
         try:
-            Function(Key=self.UserCommand[2], Symbol=self.VisualKeysDict[self.UserCommand[2]][0])
+            V_Key = self.UserCommand[2]
+            Symbol = self.VisualKeysDict[self.UserCommand[2]]
 
         except KeyError:
-            print(f"{self.NL}FUNCTION ERROR: Unknown visual code (write 'keys' for information)")
+            try:
+                CF_Key = self.ChangeFuncKeysDict[self.UserCommand[2]][0]
+                Function(V_Key='-v', Symbol=self.VisualKeysDict['-v'][0],
+                         CF_Key=self.UserCommand[2], Value=float(self.UserCommand[3]))
+
+                self.StartFunc(Function, Time)
+                return
+
+            except KeyError:
+                print(f"{self.NL}FUNCTION ERROR: Unknown key (write 'keys' for information)")
+                return
+
+            except IndexError:
+                print(f"{self.NL}FUNCTION ERROR: Function needs k value (write 'keys' for information)")
+                return
+
+            except ValueError:
+                print(f"{self.NL}FUNCTION ERROR: k value must be of type int or float (write 'keys' for information)")
+                return
+
+        except IndexError:
+            Function(V_Key='-v', Symbol=self.VisualKeysDict['-v'][0])
+            self.StartFunc(Function, Time)
+            return
+
+        try:
+            CF_Key = self.ChangeFuncKeysDict[self.UserCommand[3]][0]
+
+        except KeyError:
+            print(f"{self.NL}FUNCTION ERROR: Unknown key (write 'keys' for information)")
             return
 
         except IndexError:
-            Function(Key='-v', Symbol=self.VisualKeysDict['-v'][0])
+            try:
+                Function(V_Key=self.UserCommand[2], Symbol=self.VisualKeysDict[self.UserCommand[2]][0])
+                self.StartFunc(Function, Time)
 
-        except ValueError:
-            print(f"{self.NL}FUNCTION ERROR: This function does not support this key "
-                  f"(write 'keys' for information)")
+            except ZeroDivisionError:
+                print(f"{self.NL}FUNCTION ERROR: This function does not support this key (write 'keys' for information)")
+                return
             return
 
+        try:
+            Value = self.UserCommand[4]
+
+        except IndexError:
+            print(f"{self.NL}FUNCTION ERROR: Function needs k value (write 'keys' for information)")
+            return
+
+        try:
+            Function(V_Key=self.UserCommand[2], Symbol=self.VisualKeysDict[self.UserCommand[2]][0],
+                     CF_Key=self.UserCommand[3], Value=float(self.UserCommand[4]))
+
+        except ValueError:
+            print(f"{self.NL}FUNCTION ERROR: k value must be of type int or float (write 'keys' for information)")
+            return
+
+        except ZeroDivisionError:
+            print(f"{self.NL}FUNCTION ERROR: This function does not support this key (write 'keys' for information)")
+            return
+
+        self.StartFunc(Function, Time)
+
+    def StartFunc(self, Function, Time):
         Process = multiprocessing.Process(target=Function)
 
         Process.start()
@@ -111,18 +168,22 @@ class CONSOLE:
 
         if Process.is_alive():
             Process.terminate()
-            self.Func.ClearBuffer()
+
+        self.Func.ClearBuffer()
 
     def PrintCommand(self):
-        print(f"{self.NL}{self.TAB}Вид записи: имя_функции значение_параметра_1 значение_параметра_2{self.NL}")
+        print(f"{self.NL}{self.TAB}"
+              f"Вид записи: имя_функции Обязательный_параметр "
+              f"поддерживаемый_ключ_1 поддерживаемый_ключ_2 "
+              f"обязательный_параметр_для_ключа{self.NL}")
 
         for command in self.AllCommandsDict.keys():
             Instruction = self.AllCommandsDict[command]
             print(f"{self.TAB}{command}: ")
-            print(f"{self.TAB*2}Описание: {Instruction[1]}")
+            print(f"{self.TAB * 2}Описание: {Instruction[1]}")
             try:
-                print(f"{self.TAB*2}Обязательные параметры: {Instruction[2]}")
-                print(f"{self.TAB*2}Необязательные параметры: {Instruction[3]}")
+                print(f"{self.TAB * 2}Обязательные параметры: {Instruction[2]}")
+                print(f"{self.TAB * 2}Необязательные параметры: {Instruction[3]}")
             except IndexError:
                 pass
             print()
@@ -131,10 +192,19 @@ class CONSOLE:
         print(f"{self.NL}")
 
         for key in self.VisualKeysDict.keys():
+            Instruction = self.VisualKeysDict[key]
             print(f"{self.TAB}{key}: ")
-            print(f"{self.TAB * 2}Используемый символ: {self.VisualKeysDict[key][0]}")
-            print(f"{self.TAB * 2}Описание: {self.VisualKeysDict[key][1]}")
-            print(f"{self.TAB * 2}Используется: {self.VisualKeysDict[key][2]}")
+            print(f"{self.TAB * 2}Используемый символ: {Instruction[0]}")
+            print(f"{self.TAB * 2}Описание: {Instruction[1]}")
+            print(f"{self.TAB * 2}Используется: {Instruction[2]}")
+            print()
+
+        for key in self.ChangeFuncKeysDict.keys():
+            Instruction = self.ChangeFuncKeysDict[key]
+            print(f"{self.TAB}{key}: ")
+            print(f"{self.TAB * 2}Описание: {Instruction[1]}")
+            print(f"{self.TAB * 2}Обязательный параметр: {Instruction[2]}")
+            print(f"{self.TAB * 2}Используется: {Instruction[3]}")
             print()
 
     def GoodJob(self):

@@ -75,6 +75,9 @@ class CONSOLE:
             except KeyError:
                 print(f"{self.NL}CONSOLE ERROR: Unknown command (write 'commands' for information)")
 
+            except IndexError:
+                print(f"{self.NL}CONSOLE ERROR: The console cannot be empty")
+
     def Schedule(self):
         AllFunctionsDict = {'sin': self.Func.SIN, 'cos': self.Func.COS, 'tan': self.Func.TAN,
                             'cos_sin': self.Func.COS_SIN}

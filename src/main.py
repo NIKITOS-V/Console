@@ -1,5 +1,25 @@
 from src.functions import SIN, COS_SIN, COS
 from src.functions import pi
 
+"""
+Короче в чём суть:
 
-COS_SIN(cos_k= 0.5, sin_fi=pi, n=3, middle_empty_char=" ", start_empty_char="*", main_char="*")
+Функции:
+    SIN, COS, COS_SIN - функции по созданию графиков, возвращают массив со значениями оп оси y.
+    Остальные функции - служебные.
+
+Параметры:
+    Для COS и SIN:
+        k - коэффициент перед x (типа y = k * cos(x), вот тот самый коэффициент),
+        fi - начальная фаза,
+        n - ко-во периодов для вывода (берётся меньший период),
+        delay - задержка перед выводом строки,
+        start_empty_shar - подстрока, выводимая перед графиком
+        main_char - подстрока графика
+
+    у COS_SIN всё тоже самое, только приставки sin_ и cos_ указывают на параметр для конкретной функции
+        + middle_empty_char - подстрока, выводимая между линиями графика
+"""
+
+
+COS_SIN(cos_k= 0.5, sin_fi=pi, n=5, middle_empty_char=" ", start_empty_char="*", main_char="*")
